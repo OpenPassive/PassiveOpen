@@ -18,6 +18,35 @@ const measureRoof = () => {
   return [
     new Measure({
       housePart: HousePart.measures,
+      selector: "house-width",
+      floor: Floor.all,
+      direction: -90,
+      textRotate: 0,
+      decimals: 3,
+      onUpdate: function (this: Measure, house: House) {
+        const cross = house.cross;
+        this.offsetMeters = 2;
+        this.a = [0, 0];
+        this.b = [cross.innerWidth, 0];
+      },
+    }),
+    new Measure({
+      housePart: HousePart.measures,
+      selector: "house-inner-width",
+      floor: Floor.all,
+      direction: -90,
+      textRotate: 0,
+      decimals: 3,
+      onUpdate: function (this: Measure, house: House) {
+        const cross = house.cross;
+        this.offsetMeters = 1;
+        this.a = [cross.wallOuterThickness, 0];
+        this.b = [cross.innerWidth - cross.wallOuterThickness, 0];
+      },
+    }),
+
+    new Measure({
+      housePart: HousePart.measures,
       selector: "minimum",
       floor: Floor.all,
       direction: 0,
@@ -26,11 +55,13 @@ const measureRoof = () => {
       onUpdate: function (this: Measure, house: House) {
         const cross = house.cross;
         const level = cross.elevations[Elevation.topFloor];
-        this.offsetPixels = -20;
         const i = cross.getIntersectionWithRoof(cross.minimumHeight);
-        this.offsetMeters = -1;
-        this.a = [+cross.wallOuterThickness, -level];
-        this.b = [i[0], -i[1]];
+        this.offsetPixels = -5;
+        this.offsetMeters = -0;
+        const x = cross.innerWidth - i[0];
+        this.a = [x, -level];
+        this.b = [x, -i[1]];
+        this.outOfDesign = cross.wallOuterThickness === i[0];
       },
     }),
     new Measure({
@@ -43,11 +74,13 @@ const measureRoof = () => {
       onUpdate: function (this: Measure, house: House) {
         const cross = house.cross;
         const level = cross.elevations[Elevation.topFloor];
-        this.offsetPixels = 0;
         const i = cross.getIntersectionWithRoof(cross.minimumHeight);
+        this.offsetPixels = 0;
         this.offsetMeters = 1.5;
-        this.a = [+cross.wallOuterThickness, -level];
-        this.b = [i[0], -i[1]];
+        const x = cross.innerWidth - i[0];
+        this.a = [x, -i[1]];
+        this.b = [x + i[0] - cross.wallOuterThickness, -level];
+        this.setVisibility(cross.wallOuterThickness !== i[0]);
       },
     }),
     new Measure({
@@ -55,16 +88,16 @@ const measureRoof = () => {
       selector: "minimum-room",
       floor: Floor.all,
       direction: 0,
-      textRotate: 45,
+      textRotate: 0,
       decimals: 3,
       onUpdate: function (this: Measure, house: House) {
         const cross = house.cross;
         const level = cross.elevations[Elevation.topFloor];
-        this.offsetPixels = 20;
         const i = cross.getIntersectionWithRoof(cross.minimumHeightRoom);
-        this.offsetMeters = 1;
+        this.offsetPixels = -20;
+        this.offsetMeters = -0;
         const x = cross.innerWidth - i[0];
-        this.a = [cross.innerWidth, -level];
+        this.a = [x, -level];
         this.b = [x, -i[1]];
       },
     }),
@@ -78,9 +111,9 @@ const measureRoof = () => {
       decimals: 3,
       onUpdate: function (this: Measure, house: House) {
         const cross = house.cross;
-        this.offsetPixels = 0;
         const level = cross.elevations[Elevation.topFloor];
         const i = cross.getIntersectionWithRoof(cross.minimumHeightRoom);
+        this.offsetPixels = 0;
         this.offsetMeters = 1.5;
         const x = cross.innerWidth - i[0];
         this.a = [x, -i[1]];
@@ -98,7 +131,41 @@ const measureRoof = () => {
         const high = cross.roofPoints[RoofPoint.bendInside];
         const low = cross.roofPoints[RoofPoint.wallInside];
         this.offsetPixels = 0;
-        this.offsetMeters = -1.5;
+        this.offsetMeters = -0.5;
+        this.a = [low[0], -low[1]];
+        this.b = [high[0], -high[1]];
+        this.direction = angleBetween(this.a, this.b) - 90;
+      },
+    }),
+    new Measure({
+      housePart: HousePart.measures,
+      selector: "lower-roof-outside",
+      floor: Floor.all,
+      textRotate: 0,
+      decimals: 3,
+      onUpdate: function (this: Measure, house: House) {
+        const cross = house.cross;
+        const high = cross.roofPoints[RoofPoint.bendOutside];
+        const low = cross.roofPoints[RoofPoint.sprocketOutside];
+        this.offsetPixels = 0;
+        this.offsetMeters = 0.5;
+        this.a = [low[0], -low[1]];
+        this.b = [high[0], -high[1]];
+        this.direction = angleBetween(this.a, this.b) - 90;
+      },
+    }),
+    new Measure({
+      housePart: HousePart.measures,
+      selector: "lower-roof-outside-total",
+      floor: Floor.all,
+      textRotate: 0,
+      decimals: 3,
+      onUpdate: function (this: Measure, house: House) {
+        const cross = house.cross;
+        const high = cross.roofPoints[RoofPoint.bendOutside];
+        const low = cross.roofPoints[RoofPoint.lowestOutside];
+        this.offsetPixels = 0;
+        this.offsetMeters = 1.0;
         this.a = [low[0], -low[1]];
         this.b = [high[0], -high[1]];
         this.direction = angleBetween(this.a, this.b) - 90;
@@ -116,7 +183,24 @@ const measureRoof = () => {
         const low = cross.roofPoints[RoofPoint.bendInside];
         const high = cross.roofPoints[RoofPoint.topInside];
         this.offsetPixels = 0;
-        this.offsetMeters = 1.5;
+        this.offsetMeters = -0.5;
+        this.a = [low[0], -low[1]];
+        this.b = [high[0], -high[1]];
+        this.direction = angleBetween(this.a, this.b) - 90;
+      },
+    }),
+    new Measure({
+      housePart: HousePart.measures,
+      selector: "higher-roof-outside",
+      floor: Floor.all,
+      textRotate: 0,
+      decimals: 3,
+      onUpdate: function (this: Measure, house: House) {
+        const cross = house.cross;
+        const low = cross.roofPoints[RoofPoint.bendOutside];
+        const high = cross.roofPoints[RoofPoint.topOutside];
+        this.offsetPixels = 0;
+        this.offsetMeters = 0.5;
         this.a = [low[0], -low[1]];
         this.b = [high[0], -high[1]];
         this.direction = angleBetween(this.a, this.b) - 90;
@@ -146,13 +230,14 @@ const measureRoof = () => {
       floor: Floor.all,
       textRotate: 0,
       decimals: 3,
+      direction: 180,
       onUpdate: function (this: Measure, house: House) {
         const cross = house.cross;
         const low = [0, cross.elevations[Elevation.ground]];
         const high = cross.roofPoints[RoofPoint.topOutside];
-        this.offsetPixels = -0;
-        this.offsetMeters = -5;
-        this.a = [0, -low[1]];
+        this.offsetPixels = 80;
+        this.offsetMeters = 0;
+        this.a = [cross.innerWidth, -low[1]];
         this.b = [high[0], -high[1]];
         this.direction = 0; //
       },

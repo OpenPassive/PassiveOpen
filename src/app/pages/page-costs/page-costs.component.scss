@@ -35,10 +35,10 @@ app-table {
 }
 ::ng-deep {
   td.mat-column-price span {
-    opacity: 0; //.4;
+    opacity: 0.4;
   }
   td.mat-column-calcPrice span {
-    opacity: 0; //.4;
+    opacity: 0.8;
   }
   #table-costs-totals {
     .mat-column-sizeOrVersion,

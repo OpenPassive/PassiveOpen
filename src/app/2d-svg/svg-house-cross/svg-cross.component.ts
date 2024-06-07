@@ -117,14 +117,9 @@ export class SvgCrossComponent extends BasicSVGComponent {
     crossBuildingParts.forEach((housePart) => {
       let vis = true;
 
-      if (housePart.housePart === HousePart.measures)
-        vis = states[State.measure];
+      if (housePart.housePart === HousePart.measures) vis = true; //states[State.measure];
 
       if (housePart.selector.includes("__h-")) vis = true;
-
-      // if (housePart.selector === "building-crawler")
-      //   vis = house.cross.crawlerSpace;
-
       housePart.setVisibility(vis);
     });
   }

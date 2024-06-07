@@ -18,6 +18,12 @@ $sun-color: rgb(253, 200, 101);
     }
   }
 
+  .wall-gable {
+    circle {
+      opacity: 1 !important;
+    }
+  }
+
   .sensor-water-cold,
   .sensor-dimmer,
   .sensor-pir,

@@ -39,6 +39,12 @@ export class PageCostsComponent {
         });
 
         this.tables$.next([
+          //
+          this.getKitchen(),
+          //
+        ]);
+        this.hiddenTables$.next([
+          //
           this.getPreps(),
           this.getConstruction(),
           this.getOpenings(),
@@ -46,8 +52,9 @@ export class PageCostsComponent {
           this.getFinish(),
           this.getWater(),
           this.getOutsideFinish(),
+          this.getBathroom(),
+          //
         ]);
-        this.hiddenTables$.next([this.getKitchen(), this.getBathroom()]);
         this.totals$.next(this.getTotals());
       });
   }
@@ -465,7 +472,7 @@ export class PageCostsComponent {
       alias: "Bathroom",
       costs: [
         new Cost({
-          name: "Complete kitchen",
+          name: "Complete Bathroom",
           price: 9000,
         }),
       ],
@@ -478,8 +485,61 @@ export class PageCostsComponent {
       alias: "Kitchen",
       costs: [
         new Cost({
-          name: "Complete kitchen",
-          price: 9000,
+          name: "Dishwasher",
+          type: "Bosch SMV4HAX40N",
+          other:
+            "https://www.consumentenbond.nl/vaatwasser/producten/bosch/smv4hax40n",
+          price: 800,
+        }),
+        new Cost({
+          name: "Cooking plate",
+          type: `Siemens EX807NX68E`,
+          other: `Can be 2000e cheaper, https://www.consumentenbond.nl/inductiekookplaat/producten/siemens/ex807nx68e`,
+          price: 5000,
+        }),
+        new Cost({
+          name: "Integrated Freezer & Fridge",
+          type: `?Siemens-ki81rvsf0`,
+          other: `https://www.coolblue.be/nl/product/867986/siemens-ki81rvsf0.html`,
+          price: 2000,
+        }),
+        new Cost({
+          name: "Oven",
+          type: `Smaksak`,
+          other: ``,
+          price: 1000,
+        }),
+        new Cost({
+          name: "Microwave",
+          type: `Mattradition`,
+          other: ``,
+          price: 700,
+        }),
+
+        // 60x60 = 60
+        // 60x37 = 50
+        // 60 high = 150
+        new Cost({
+          name: "All cabinets",
+          type: `Method`,
+          other: ``,
+          price: 60 * 8 + 50 * 8 + 150 * 6,
+        }),
+        new Cost({
+          name: "Doors",
+          type: ``,
+          other: ``,
+          price: 60 * 16 + 6 * 200,
+        }),
+        new Cost({
+          name: "Countertop ",
+          type: `Multiplex`,
+          other: ``,
+          price: 400,
+        }),
+        new Cost({
+          name: "Floor and backtiles",
+          price: 1160,
         }),
       ],
     });

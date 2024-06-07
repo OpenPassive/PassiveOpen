@@ -191,11 +191,11 @@ export class House extends HouseUser {
     this.flattenHouseJSON();
     this.calculateHouse();
     this.houseParts.gridLines = getGridLines(this);
-    this.houseParts.studs = createStuds(this);
     this.houseParts.measures = createMeasures(this);
     this.stair.create(this);
 
     this.updateHouseParts();
+    this.houseParts.studs = createStuds(this);
 
     this.calculateStats();
   }
@@ -251,21 +251,41 @@ export class House extends HouseUser {
   /**Main calculations */
   calculateHouse() {
     const studWidth = 45 / 1000;
+    const studDepth = 300 / 1000;
     const innerWallThickness = 88 / 1000;
-    this.innerBase =
-      this.studAmount * this.studDistance + studWidth - innerWallThickness * 2;
+    const outerWallThickness = round(
+      this.wallOuterThickness - innerWallThickness - studDepth,
+      3
+    );
+    console.log(this.wallOuterThickness - innerWallThickness - studDepth);
 
-    this.outerBase = round(this.innerBase + this.wallOuterThickness * 2); // ~ 6.2m
+    const betweenOutsideStuds = round(
+      (this.studAmount - 1) * this.studDistance + studWidth,
+      3
+    );
 
-    console.log(this.outerBase);
+    this.innerBase = round(
+      betweenOutsideStuds - (studDepth + innerWallThickness) * 2,
+      3
+    );
 
-    // #10 6000 - 6333 - 5870
-    // #11 6600 - 6933 - 5870
+    this.outerBase = round(betweenOutsideStuds + outerWallThickness * 2, 3); // ~ 6.2m
 
-    this.extensionToSouth = this.studAmountSouth * this.studDistance;
-    this.extensionToNorth = this.studAmountNorth * this.studDistance;
-    this.extensionToEast = this.studAmountEast * this.studDistance;
-    this.extensionToWest = this.studAmountWest * this.studDistance;
+    const getShortWall = (i, addHalf = false) =>
+      round(
+        (i - 1) * this.studDistance +
+          studWidth +
+          (addHalf ? studDepth : 0) +
+          innerWallThickness +
+          outerWallThickness -
+          this.wallOuterThickness,
+        3
+      );
+
+    this.extensionToNorth = getShortWall(this.studAmountNorth, true);
+    this.extensionToSouth = getShortWall(this.studAmountSouth, true);
+    this.extensionToWest = getShortWall(this.studAmountWest);
+    this.extensionToEast = getShortWall(this.studAmountEast);
 
     this.calculateTower();
     if (this.tower.show) {
@@ -304,7 +324,10 @@ export class House extends HouseUser {
       },
     };
 
-    this.stair.totalWidth = this.innerBase / 2 + this.stair.walkWidth / 2;
+    // this.stair.totalWidth = this.innerBase / 2 + this.stair.walkWidth / 2;
+    const phi = 1.61803398875;
+    this.stair.totalWidth =
+      this.stair.walkWidth * phi + this.stair.walkWidth * 2;
 
     const hallStramienWE =
       inObj.we.b + this.stair.totalWidth - this.stair.walkWidth;

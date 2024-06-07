@@ -14,6 +14,10 @@ export class WallSVG extends HousePartSVG<Wall> {
     this.svg = d3.select(`#${this.selector}`);
     this.theoretic = this.model.type === WallType.theoretic;
 
+    this.classes = [`type-${this.model.type}`];
+    if (this.model.gable) this.classes.push("wall-gable");
+    if (this.theoretic) this.classes.push("wall-theoretic");
+
     this.svgOrigin = this.svg.select<SVGCircleElement>(".wall-origin");
     this.svgLeft = this.svg.select<SVGPolylineElement>(".wall-left");
     this.svgRight = this.svg.select<SVGPolylineElement>(".wall-right");
@@ -24,10 +28,6 @@ export class WallSVG extends HousePartSVG<Wall> {
     }
     if (this.model.type === WallType.inner) {
       this.model.thickness = this.model.parent.parent.wallInnerThickness;
-    }
-
-    if (this.svg.node()) {
-      this.svg.node().classList.add(`type-${this.model.type}`);
     }
   }
   drawWhenNotVisible(): void {
@@ -75,7 +75,7 @@ export class WallSVG extends HousePartSVG<Wall> {
 
   updateScale() {
     if (this.svgOrigin) {
-      this.svgOrigin.attr("r", this.meterPerPixel * this.lineThickness * 3);
+      this.svgOrigin.attr("r", this.meterPerPixel * this.lineThickness * 10);
     }
     if (this.svgLeft) {
       this.svgLeft.attr(

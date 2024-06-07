@@ -1,4 +1,6 @@
 <svg #svg class="cross" preserveAspectRatio="xMidYMid meet">
+
+
   <defs>
     <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="scale(0.1)">
       <path d="M-1,1 l2,-2
@@ -8,11 +10,12 @@
   </defs>
 
   <g class="all" transform="rotate(0)">
+
     <g class="g-figure"></g>
+
     <g class="g-building">
       <g [id]="key" *ngFor="let key of selectors[HousePart.other]"> </g>
     </g>
-
     <g class="g-roof-circle" [ngStyle]="{opacity:roofCheck(RoofStyle.roofCircle)}">
       <g [id]="key" *ngFor="let key of selectors[HousePart.roofCircle]">
       </g>
@@ -21,6 +24,10 @@
       <g [id]="key" *ngFor="let key of selectors[HousePart.roof70]">
       </g>
     </g>
+    <g class="cross-measure">
+      <g [id]="key" *ngFor="let key of selectors[HousePart.measures]"></g>
+    </g>
+
 
 
     <!-- Helpers -->
@@ -37,12 +44,6 @@
     <circle *ngFor="let i of [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]" id="debug-point-{{i}}"></circle>
 
     </g> -->
-
-    <g class="cross-measure">
-
-      <g [id]="key" *ngFor="let key of selectors[HousePart.measures]">
-      </g>
-    </g>
 
     <g *ngIf="!isChild" id="g-distance"></g>
   </g>
